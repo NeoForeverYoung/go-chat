@@ -2,6 +2,7 @@
 .idea/
 .git/
 .DS_Store
+.VSCodeCounter/
 runtime/
 config.yaml
 uploads/

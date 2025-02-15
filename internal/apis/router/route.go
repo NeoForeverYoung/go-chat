@@ -3,15 +3,17 @@ package router
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/tidwall/sjson"
 	"go-chat/config"
 	"go-chat/internal/apis/handler"
 	"go-chat/internal/pkg/core/middleware"
 	"go-chat/internal/pkg/logger"
 	"go-chat/internal/repository/cache"
+
+	"github.com/gin-gonic/gin"
+	"github.com/tidwall/sjson"
 )
 
+// TODO 不明白，最开始是哪里调用的这个NewRouter
 // NewRouter 初始化配置路由
 func NewRouter(conf *config.Config, handler *handler.Handler, session *cache.JwtTokenStorage) *gin.Engine {
 	router := gin.New()
