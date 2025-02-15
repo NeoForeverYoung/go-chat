@@ -11,12 +11,15 @@ import (
 	"syscall"
 	"time"
 
+	"go-chat/internal/pkg/server"
+
 	"github.com/gin-gonic/gin"
 	"github.com/urfave/cli/v2"
-	"go-chat/internal/pkg/server"
 	"golang.org/x/sync/errgroup"
 )
 
+// TODO 需要再理解下这个典型的gin框架服务器启动函数
+// Run 启动 HTTP API 服务
 func Run(ctx *cli.Context, app *AppProvider) error {
 	if !app.Config.Debug() {
 		gin.SetMode(gin.ReleaseMode)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/urfave/cli/v2"
 	"go-chat/config"
 	"go-chat/internal/apis"
 	"go-chat/internal/comet"
@@ -9,6 +8,8 @@ import (
 	"go-chat/internal/pkg/core"
 	"go-chat/internal/pkg/logger"
 	_ "go-chat/internal/pkg/server"
+
+	"github.com/urfave/cli/v2"
 )
 
 // Version 服务版本号（默认）
@@ -32,7 +33,14 @@ func NewHttpCommand() core.Command {
 		Name:  "http",
 		Usage: "Http Command - Http API 接口服务",
 		Action: func(ctx *cli.Context, conf *config.Config) error {
+			// 初始化日志系统
+			// - 日志文件路径为 app.log
+			// - 日志级别为 Info
+			// - 日志标识为 "http"
 			logger.Init(conf.Log.LogFilePath("app.log"), logger.LevelInfo, "http")
+			// 启动 HTTP 服务
+			// NewHttpInjector(conf) 创建依赖注入器
+			// apis.Run 启动 HTTP API 服务
 			return apis.Run(ctx, NewHttpInjector(conf))
 		},
 	}
