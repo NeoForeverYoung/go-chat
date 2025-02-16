@@ -36,9 +36,10 @@ func RegisterAdminRoute(
 		}
 
 		// 认证相关路由组
+		// TODO 为什么admin的登录接口和web的登录接口是一样的，但还是要单独出来？
 		auth := v1.Group("/auth")
 		{
-			// 登录接口
+			// amdin登录接口,只是用于管理员登录的接口
 			// POST /admin/v1/auth/login
 			auth.POST("/login", core.HandlerFunc(handler.V1.Auth.Login))
 

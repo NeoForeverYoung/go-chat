@@ -7,10 +7,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"go-chat/internal/pkg/core/errorx"
 	"go-chat/internal/pkg/core/middleware"
 	"go-chat/internal/pkg/core/validator"
+
+	"github.com/gin-gonic/gin"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -51,17 +52,23 @@ func (c *Context) Forbidden(message string) error {
 
 // InvalidParams 参数错误
 func (c *Context) InvalidParams(message any) error {
+	// 初始化响应，设置状态码为 400
 	resp := &Response{Code: 400, Message: "invalid params"}
 
+	// 根据 message 的类型进行处理
 	switch msg := message.(type) {
 	case error:
+		// 如果 message 是 error 类型，使用 validator.Translate 翻译错误信息
 		resp.Message = validator.Translate(msg)
 	case string:
+		// 如果 message 是字符串类型，直接赋值给 resp.Message
 		resp.Message = msg
 	default:
+		// 如果 message 是其他类型，使用 fmt.Sprintf 转换为字符串
 		resp.Message = fmt.Sprintf("%v", msg)
 	}
 
+	// 中止请求，返回 400 状态码和响应体
 	c.Context.AbortWithStatusJSON(http.StatusBadRequest, resp)
 
 	return nil

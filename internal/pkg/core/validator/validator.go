@@ -37,14 +37,20 @@ func Initialize() error {
 	return nil
 }
 
+// TODO 这里不是很理解
+// Translate 翻译错误信息
 func Translate(err error) string {
+	// 检查错误是否是验证器错误
 	var errs validator.ValidationErrors
 	if errors.As(err, &errs) {
+		// 遍历验证器错误，获取每个错误的信息
 		for _, err := range errs {
+			// 使用翻译器翻译错误信息
 			return err.Translate(trans)
 		}
 	}
 
+	// 如果错误不是验证器错误，直接返回错误信息
 	return err.Error()
 }
 
