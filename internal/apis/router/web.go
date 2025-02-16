@@ -1,12 +1,14 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"go-chat/internal/apis/handler/web"
 	"go-chat/internal/pkg/core"
 	"go-chat/internal/pkg/core/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
+// TODO 2.16 here
 // RegisterWebRoute 注册 Web 路由
 func RegisterWebRoute(secret string, router *gin.Engine, handler *web.Handler, storage middleware.IStorage) {
 

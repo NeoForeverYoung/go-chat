@@ -13,9 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"go-chat/internal/pkg/jsonutil"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"go-chat/internal/pkg/jsonutil"
 )
 
 type RequestInfo struct {
@@ -197,6 +198,7 @@ func (a *AccessLogStore) load() {
 	a.info.ResponseBody = writer.body.String()
 	a.info.ResponseBodyRaw = a.info.ResponseBody
 
+	// 从gin框架的context中获取jwt session
 	session, isOk := a.ctx.Get(JWTSessionConst)
 	if isOk {
 		a.info.Metadata["uid"] = session.(*JSession).Uid

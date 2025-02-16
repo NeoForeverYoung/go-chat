@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"go-chat/internal/pkg/jwt"
+
+	"github.com/gin-gonic/gin"
 )
 
 const JWTSessionConst = "__JWT_SESSION__"
@@ -31,8 +32,10 @@ type JSession struct {
 // Auth 授权中间件
 func Auth(secret string, guard string, storage IStorage) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// 获取请求头中的 Authorization 字段, 并去除 Bearer 前缀，获取token
 		token := AuthHeaderToken(c)
 
+		// 验证token
 		claims, err := verify(guard, secret, token)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"code": 401, "message": err.Error()})
@@ -50,6 +53,7 @@ func Auth(secret string, guard string, storage IStorage) gin.HandlerFunc {
 			return
 		}
 
+		// 设置jwt session到gin框架的context中, 用于后续的请求
 		c.Set(JWTSessionConst, &JSession{
 			Uid:       uid,
 			Token:     token,
@@ -72,6 +76,10 @@ func AuthHeaderToken(c *gin.Context) string {
 	return token
 }
 
+// verify 验证token
+// guard 守卫名称, 比如 api, admin, open
+// secret 密钥, 比如 asdfasdfasdfadsf
+// token 令牌
 func verify(guard string, secret string, token string) (*jwt.AuthClaims, error) {
 
 	if token == "" {

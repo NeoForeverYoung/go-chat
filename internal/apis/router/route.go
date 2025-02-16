@@ -55,8 +55,13 @@ func NewRouter(conf *config.Config, handler *handler.Handler, session *cache.Jwt
 		c.JSON(200, map[string]any{"status": "ok"})
 	})
 
+	// 注册 Web 路由
 	RegisterWebRoute(conf.Jwt.Secret, router, handler.Api, session)
+
+	// 注册 Admin 路由
 	RegisterAdminRoute(conf.Jwt.Secret, router, handler.Admin, session)
+
+	// 注册 Open 路由
 	RegisterOpenRoute(router, handler.Open)
 
 	// 注册 debug 路由
