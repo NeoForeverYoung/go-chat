@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO 2.16 here
 // RegisterWebRoute 注册 Web 路由
 func RegisterWebRoute(secret string, router *gin.Engine, handler *web.Handler, storage middleware.IStorage) {
 
 	// 授权验证中间件
+	// 获取uid，token等信息，塞到gin框架的context中
 	authorize := middleware.Auth(secret, "api", storage)
 
 	// v1 接口
@@ -20,18 +20,26 @@ func RegisterWebRoute(secret string, router *gin.Engine, handler *web.Handler, s
 	{
 		common := v1.Group("/common")
 		{
+			// TODO 2.17 here
+			// 发送短信验证码
 			common.POST("/send-sms-code", core.HandlerFunc(handler.V1.Common.SmsCode))
+			// 发送邮箱验证码
 			common.POST("/send-email-code", authorize, core.HandlerFunc(handler.V1.Common.EmailCode))
 		}
 
 		// 授权相关分组
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/login", core.HandlerFunc(handler.V1.Auth.Login))                // 登录
-			auth.POST("/register", core.HandlerFunc(handler.V1.Auth.Register))          // 注册
-			auth.POST("/refresh", authorize, core.HandlerFunc(handler.V1.Auth.Refresh)) // 刷新 Token
-			auth.POST("/logout", authorize, core.HandlerFunc(handler.V1.Auth.Logout))   // 退出登录
-			auth.POST("/forget", core.HandlerFunc(handler.V1.Auth.Forget))              // 找回密码
+			// 登录
+			auth.POST("/login", core.HandlerFunc(handler.V1.Auth.Login))
+			// 注册
+			auth.POST("/register", core.HandlerFunc(handler.V1.Auth.Register))
+			// 刷新 Token
+			auth.POST("/refresh", authorize, core.HandlerFunc(handler.V1.Auth.Refresh))
+			// 退出登录
+			auth.POST("/logout", authorize, core.HandlerFunc(handler.V1.Auth.Logout))
+			// 找回密码
+			auth.POST("/forget", core.HandlerFunc(handler.V1.Auth.Forget))
 		}
 
 		// 用户相关分组
