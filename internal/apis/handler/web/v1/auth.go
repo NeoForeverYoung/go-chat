@@ -4,8 +4,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/redis/go-redis/v9"
 	"go-chat/internal/pkg/encrypt/rsautil"
+
+	"github.com/redis/go-redis/v9"
 
 	"go-chat/api/pb/queue/v1"
 	"go-chat/api/pb/web/v1"
@@ -39,16 +40,20 @@ func (c *Auth) Login(ctx *core.Context) error {
 		return ctx.InvalidParams(err)
 	}
 
+	// 解密密码
+	// TODO 是否存在安全风险？不能直接对比加密后的字符串吗？
 	password, err := c.Rsa.Decrypt(in.Password)
 	if err != nil {
 		return ctx.Error(err)
 	}
 
+	// 通过手机号登录的逻辑
 	user, err := c.UserService.Login(ctx.Ctx(), in.Mobile, string(password))
 	if err != nil {
 		return ctx.Error(err)
 	}
 
+	// 将用户登录信息转换为消息格式
 	data := jsonutil.Marshal(queue.UserLoginRequest{
 		UserId:   int32(user.Id),
 		IpAddr:   ctx.Context.ClientIP(),
@@ -57,6 +62,7 @@ func (c *Auth) Login(ctx *core.Context) error {
 		LoginAt:  time.Now().Format(time.DateTime),
 	})
 
+	// 投递登录消息，异步通知其他模块进行处理
 	if err := c.Redis.Publish(ctx.Ctx(), entity.LoginTopic, data).Err(); err != nil {
 		logger.ErrorWithFields(
 			"投递登录消息异常", err,
